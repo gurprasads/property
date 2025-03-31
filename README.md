@@ -1,3 +1,15 @@
+# Connect MetaMask Wallet
+
+* Install MetaMask Wallet Extension in your browser.
+* Enable View TestNet Setting in the Extension.
+* Add HederaTestNet network in MetaMask.
+  
+![image](https://github.com/user-attachments/assets/c6baae63-99f2-4aa6-a338-3553f0e2825e)
+
+* Import your HederaTestNet Account by adding EVM Address in the import field.
+  
+![image](https://github.com/user-attachments/assets/07ab9ce0-e7bd-431e-93b4-ce04f3a7ac56)
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
