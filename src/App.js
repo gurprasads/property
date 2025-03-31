@@ -20,7 +20,8 @@ function App() {
   });
   const [sellableDetails, setSellableDetails] = useState({
     propertyId: '',
-    isSellable: false
+    isSellable: false,
+    newSalePrice: ''
   });
   const [registerDetails, setRegisterDetails] = useState({
     ownerName: '',
@@ -44,7 +45,6 @@ function App() {
   const [admin1, setAdmin1] = useState(null);
   const [admin2, setAdmin2] = useState(null);
   const [salePriceCheck, setSalePriceCheck] = useState({ propertyId: '', price: null });
-  const [gasEstimate, setGasEstimate] = useState(null);
 
   // Connect to MetaMask
   const connectWallet = async () => {
@@ -175,16 +175,33 @@ function App() {
   }, [contract, buyDetails, properties, fetchProperties]);
 
   // Set property sellable (owner only)
-  const setPropertySellable = useCallback(async () => {
+  const setPropertySellableAndUpdatePrice = useCallback(async () => {
     if (contract) {
       try {
-        const tx = await contract.setSellable(sellableDetails.propertyId, sellableDetails.isSellable);
+        const newSalePriceScaled = sellableDetails.newSalePrice
+          ? sellableDetails.newSalePrice
+          : 0;
+        if (sellableDetails.newSalePrice && (isNaN(sellableDetails.newSalePrice) || Number(sellableDetails.newSalePrice) <= 0)) {
+          alert("Please enter a valid sale price in HBAR.");
+          return;
+        }
+
+        const tx = await contract.setSellableAndUpdatePrice(
+          sellableDetails.propertyId,
+          sellableDetails.isSellable,
+          newSalePriceScaled
+        );
         await tx.wait();
-        alert("Property sellable status updated!");
+        console.log("Sellable status updated to:", sellableDetails.isSellable);
+        if (sellableDetails.newSalePrice && sellableDetails.isSellable) {
+          console.log("New Sale Price Scaled:", newSalePriceScaled.toString());
+        }
+
+        alert("Property sellable status" + (sellableDetails.newSalePrice && sellableDetails.isSellable ? " and sale price" : "") + " updated successfully!");
         fetchProperties();
       } catch (error) {
-        console.error("Error updating sellable status:", error);
-        alert("Failed to update sellable status: " + error.message);
+        console.error("Error updating sellable status and sale price:", error);
+        alert("Failed to update sellable status or sale price: " + error.message);
       }
     }
   }, [contract, sellableDetails, fetchProperties]);
@@ -244,26 +261,6 @@ function App() {
       }
     }
   }, [contract, salePriceCheck]);
-
-  // Check gas estimate
-  const checkGasEstimate = useCallback(async () => {
-    if (contract) {
-      try {
-        const gas = await contract.estimateGas.buyProperty(
-          buyDetails.propertyId,
-          buyDetails.newOwnerName,
-          buyDetails.newGovUID,
-          buyDetails.newMetaMaskAccount,
-          { value: buyDetails.amount || "0" }
-        );
-        setGasEstimate(gas.toString());
-        alert(`Estimated Gas: ${gas.toString()} wei-like units`);
-      } catch (error) {
-        console.error("Error estimating gas:", error);
-        alert("Failed to estimate gas: " + error.message);
-      }
-    }
-  }, [contract, buyDetails]);
 
   useEffect(() => {
     if (contract) {
@@ -365,7 +362,13 @@ function App() {
             <option value={true}>Sellable</option>
             <option value={false}>Not Sellable</option>
           </select>
-          <button onClick={setPropertySellable}>Set Sellable Status</button>
+          <input
+            type="text"
+            placeholder="New Sale Price (HBAR, optional)"
+            value={sellableDetails.newSalePrice}
+            onChange={(e) => setSellableDetails({ ...sellableDetails, newSalePrice: e.target.value })}
+          />
+          <button onClick={setPropertySellableAndUpdatePrice}>Set Sellable Status and Update Price</button>
 
           {isAdmin && (
             <>

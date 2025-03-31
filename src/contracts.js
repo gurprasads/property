@@ -1,4 +1,4 @@
-export const contractAddress = "0x50Fc3Bd56318638F0dDb59b2e110ed73Ab8478CE";
+export const contractAddress = "0x55cC74E459153D22E371F337a68b6033dB2f7465";
 
 export const contractABI = [
 	{
@@ -103,9 +103,14 @@ export const contractABI = [
 				"internalType": "bool",
 				"name": "_isSellable",
 				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_newSalePrice",
+				"type": "uint256"
 			}
 		],
-		"name": "setSellable",
+		"name": "setSellableAndUpdatePrice",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -142,24 +147,6 @@ export const contractABI = [
 			}
 		],
 		"name": "updateAdmins",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_propertyId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_newSalePrice",
-				"type": "uint256"
-			}
-		],
-		"name": "updateSalePrice",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
